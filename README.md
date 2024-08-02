@@ -1,16 +1,5 @@
-# starterkit-new-template (Replace by the name of your template)
+# DSCS Hackathon 2024
 
-==================================
+Welcome to the 2024 DSCS Hackathon! Please use this repository for any code you write during the Hackathon!
 
-This repo contains the Developer portal template for <Whatever the purpose of this template is>.
-
-<Please describe your template>
-
-Features
-- <write your features here>
-
-Development
------------
-How-to aricle: <link knowledge base aricle please>
-
-
+If you run into any problems, please email dscs_hackathon_org@merck.com.
