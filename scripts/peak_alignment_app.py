@@ -16,7 +16,7 @@ uploaded_file = st.file_uploader("Upload an excel file of the peaks", type=["xls
 # Check if a file has been uploaded
 if uploaded_file is not None:
     # Process the uploaded file
-    data, maxarea, df_vial_counts = process_uploaded_file(uploaded_file)
+    data, maxarea = process_uploaded_file(uploaded_file)
     
     # Display the uploaded DataFrame
     st.write("Uploaded DataFrame:")

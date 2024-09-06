@@ -4,8 +4,6 @@ import streamlit as st
 def process_uploaded_file(uploaded_file):
     """Process the uploaded Excel file and pre-process data."""
     data = pd.read_excel(uploaded_file)
-    
-    df_vial_counts = data.groupby(['Vial']).size().reset_index(name='peakCount')
     maxarea = data.groupby(['Vial'])['Area'].max().reset_index()
     areasum = data.groupby(['Vial'])['Area'].sum().reset_index(name='Sum of Area')
     maxarea['Area Sum'] = areasum['Sum of Area']
@@ -16,8 +14,7 @@ def process_uploaded_file(uploaded_file):
     maxarea = pd.merge(maxarea, RTmax, how='left', on=['Vial', 'Area'])
     maxarea = pd.merge(maxarea, df_vial_counts, how='left', on='Vial')
     maxarea[['Plate', 'Vial_Well']] = maxarea['Vial'].str.split(':', expand=True)
-
-    return data, maxarea, df_vial_counts
+    return data, maxarea
 
 def calculate_rrt(data, maxarea):
     """Calculate RRT and Area Ratio for the peaks."""
