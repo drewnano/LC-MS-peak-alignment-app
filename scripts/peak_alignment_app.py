@@ -7,7 +7,7 @@ from utils import process_uploaded_file, calculate_rrt, shift_rrt
 # Set Streamlit configuration
 st.set_page_config(page_title="Peak Alignment App", layout="wide")
 st.title("LC Peak Alignment Tool")
-st.markdown("Hackathon Team Members: Kabir Dhingra, David Gray, Stephanie Mozley, Andrew Sinegra, and Kevin Wang")
+st.markdown("Hackathon Team Members: Andrew Sinegra, Stephanie Mozley, Kevin Wang, Kabir Dhingra, and David Gray")
 st.markdown("---")
 
 # File uploader widget
