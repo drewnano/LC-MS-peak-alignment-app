@@ -4,6 +4,7 @@ import streamlit as st
 def process_uploaded_file(uploaded_file):
     """Process the uploaded Excel file and pre-process data."""
     data = pd.read_excel(uploaded_file)
+    df_vial_counts = data.groupby(['Vial']).size().reset_index(name='peakCount')
     maxarea = data.groupby(['Vial'])['Area'].max().reset_index()
     areasum = data.groupby(['Vial'])['Area'].sum().reset_index(name='Sum of Area')
     maxarea['Area Sum'] = areasum['Sum of Area']
