@@ -8,7 +8,7 @@ def process_uploaded_file(uploaded_file):
     maxarea = data.groupby(['Vial'])['Area'].max().reset_index()
     areasum = data.groupby(['Vial'])['Area'].sum().reset_index(name='Sum of Area')
     maxarea['Area Sum'] = areasum['Sum of Area']
-    maxarea['Area Ratio'] = maxarea['Area'] / maxarea['Area Sum'] * 100
+    maxarea['Area Ratio'] = (maxarea['Area'] / maxarea['Area Sum'])
     RTmax = (data.sort_values(['Vial', 'Area'], ascending=[True, False])
              .drop_duplicates(['Vial']).reset_index(drop=True)
             )
@@ -26,21 +26,31 @@ def calculate_rrt(data, maxarea):
                                    maxarea[maxarea['Vial'] == row['Vial']]['Area'].values[0], axis=1)
     return data
 
-def find_next_least_rrt(df, vial, rrt):
-    """Find the row with the next lowest RRT value for the same vial."""
-    subset_df = df[(df['Vial'] == vial) & (df['RRT'] > rrt)]
-    if not subset_df.empty:
-        next_row = subset_df.loc[subset_df['RRT'].idxmin()]
-        return next_row
-    return None
+import pandas as pd
+
+def find_next_least_rrt(data, vial, rrt):
+    """Filter the DataFrame to find the next least RRT for the given vial"""
+    subset_df = data[(data['Vial'] == vial) & (data['RRT'] < rrt)]
+    if subset_df.empty:
+        return pd.DataFrame(columns=data.columns)  # Return an empty DataFrame with the same columns
+    next_row = subset_df.loc[subset_df['RRT'].idxmin()]
+    # Convert the Series to a DataFrame
+    result_df = next_row.to_frame().T
+    # Ensure the correct data types
+    result_df = result_df.astype(data.dtypes.to_dict())
+    return result_df
 
 def find_next_highest_rrt(df, vial, rrt):
-    """Find the row with the next highest RRT value for the same vial."""
-    subset_df = df[(df['Vial'] == vial) & (df['RRT'] < rrt)]
-    if not subset_df.empty:
-        next_row = subset_df.loc[subset_df['RRT'].idxmax()]
-        return next_row
-    return None
+    """Filter the DataFrame to find the next highest RRT for the given vial"""
+    subset_df = df[(df['Vial'] == vial) & (df['RRT'] > rrt)]
+    if subset_df.empty:
+        return pd.DataFrame(columns=df.columns)  # Return an empty DataFrame with the same columns
+    next_row = subset_df.loc[subset_df['RRT'].idxmin()]
+    # Convert the Series to a DataFrame
+    result_df = next_row.to_frame().T
+    # Ensure the correct data types
+    result_df = result_df.astype(df.dtypes.to_dict())
+    return result_df
 
 def shift_rrt(data):
     """Handle RRT shifting and return updated data for display."""
