@@ -33,7 +33,7 @@ class TestRRT(unittest.TestCase):
         })
 
         pd.testing.assert_frame_equal(result, expected_result)
-def test_find_next_highest_rrt(self):
+    def test_find_next_highest_rrt(self):
         # Create sample data
         data = pd.DataFrame({
             'Vial': ['A', 'A', 'B', 'B'],
@@ -53,5 +53,27 @@ def test_find_next_highest_rrt(self):
             'Vial': pd.Series(['A'], dtype=result['Vial'].dtype),
             'RRT': pd.Series([1.0], dtype=result['RRT'].dtype)
         })
+        pd.testing.assert_frame_equal(result, expected_result)
+        
+    def test_group_peaksandRRTs(self):
+        # Create sample data
+        data = pd.DataFrame({
+            'RRT': [0.5, 0.5, 0.75, 0.75, 1.0, 1.0],
+            'peakCount': [2, 2, 1, 1, 3, 3],
+            'AreaRatio': [0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+        })
+
+        # Call the function
+        result = utils.group_peaksandRRTs(data)
+
+        # Assert the expected output
+        expected_result = pd.DataFrame({
+            'RRT': [0.5, 0.75, 1.0],
+            'peakCount': [2, 2, 2],
+            'AreaRatio Sum': [0.5, 0.9, 1.3],
+            'shift global RRT': ['None', 'None', 'None']
+        })
 
         pd.testing.assert_frame_equal(result, expected_result)
+if __name__ == '__main__':
+    unittest.main()
