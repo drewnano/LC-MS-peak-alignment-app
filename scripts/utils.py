@@ -71,7 +71,7 @@ def shift_rrt(data):
         )
 
         if shiftaction == 'None':
-            selected_rows_df = selected_rows_df.append(data[data['RRT'] == row['RRT']], ignore_index=True)
+            selected_rows_df = pd.concat([selected_rows_df, data[data['RRT'] == row['RRT']]], ignore_index=True)
 
         if shiftaction == '< shift to left':
             next_row = find_next_least_rrt(data, row['Vial'], row['RRT'])
