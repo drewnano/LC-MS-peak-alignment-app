@@ -26,14 +26,12 @@ def calculate_rrt(data, maxarea):
                                    maxarea[maxarea['Vial'] == row['Vial']]['Area'].values[0], axis=1)
     return data
 
-import pandas as pd
-
 def find_next_least_rrt(data, vial, rrt):
     """Filter the DataFrame to find the next least RRT for the given vial"""
     subset_df = data[(data['Vial'] == vial) & (data['RRT'] < rrt)]
     if subset_df.empty:
         return pd.DataFrame(columns=data.columns)  # Return an empty DataFrame with the same columns
-    next_row = subset_df.loc[subset_df['RRT'].idxmin()]
+    next_row = subset_df.loc[subset_df['RRT'].idxmax()]
     # Convert the Series to a DataFrame
     result_df = next_row.to_frame().T
     # Ensure the correct data types

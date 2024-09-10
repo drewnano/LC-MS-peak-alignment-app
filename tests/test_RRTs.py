@@ -44,7 +44,8 @@ class TestRRT(unittest.TestCase):
 
         # Call the function
         result = utils.find_next_highest_rrt(data, vial, rrt)
-
+        # Reset the index of the result DataFrame
+        result = result.reset_index(drop=True)
         # Inspect the data types of the result DataFrame
         print(result.dtypes)
 
@@ -73,7 +74,6 @@ class TestRRT(unittest.TestCase):
             'AreaRatio Sum': [0.5, 0.9, 1.3],
             'shift global RRT': ['None', 'None', 'None']
         })
-
         pd.testing.assert_frame_equal(result, expected_result)
 if __name__ == '__main__':
     unittest.main()
