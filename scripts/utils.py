@@ -52,10 +52,8 @@ def find_next_highest_rrt(df, vial, rrt):
     result_df = result_df.astype(df.dtypes.to_dict())
     return result_df
 
-def shift_rrt(data):
-    """Handle RRT shifting and return updated data for display."""
-    selected_rows_df = pd.DataFrame(columns=data.columns)
-
+def group_peaksandRRTs(data):
+    """group peaks and RRTs so we may prepare to shift them"""
     # Group and calculate peakCount and AreaRatio Sum for each RRT
     df_RRT = data.groupby(['RRT']).size().reset_index(name='peakCount')
     df_RRT_area_ratio = data.groupby(['RRT'])['AreaRatio'].sum().reset_index(name='AreaRatio Sum')
@@ -63,6 +61,13 @@ def shift_rrt(data):
 
     # Add a column 'shift global RRT' for shift action dropdowns
     df_RRT['shift global RRT'] = 'None'
+    return df_RRT
+
+def shift_rrt(data):
+    """Handle RRT shifting and return updated data for display."""
+    selected_rows_df = pd.DataFrame(columns=data.columns)
+
+    df_RRT = group_peaksandRRTs(data)
 
     # Add a list to store user-selected actions
     shift_actions = []
