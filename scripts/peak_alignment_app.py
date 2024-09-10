@@ -23,7 +23,7 @@ if uploaded_file is not None:
     st.write(data)
     
     # Calculate RRT values and other metrics
-    data = calculate_rrt(data, maxarea)
+    data, df_RRT = calculate_rrt(data, maxarea)
     
     # Shift global RRT values for merging peaks
     selected_rows_df, pivoted_df = shift_rrt(data)
@@ -33,7 +33,7 @@ if uploaded_file is not None:
     st.write(selected_rows_df)
     
     # Convert the DataFrame to a CSV format
-    csv = pivoted_df.to_csv(index=False)
+    csv = pivoted_df.to_csv(index=True, header=True)
     st.download_button(
         label="Download Output as CSV",
         data=csv,

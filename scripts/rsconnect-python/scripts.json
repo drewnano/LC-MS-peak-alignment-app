@@ -1,0 +1,12 @@
+{
+    "https://awspositconnect-dev.merck.com": {
+        "server_url": "https://awspositconnect-dev.merck.com",
+        "filename": "C:\\Users\\sinegraa\\OneDrive - Merck Sharp & Dohme LLC\\hackathon\\dscs-hackathon-2024-team-3\\scripts",
+        "app_url": "https://awspositconnect-dev.merck.com/content/0ca81484-af3c-48e0-9868-664c0a93fb5a/",
+        "app_id": "0ca81484-af3c-48e0-9868-664c0a93fb5a",
+        "app_guid": "0ca81484-af3c-48e0-9868-664c0a93fb5a",
+        "title": "Peak Alignment App Test",
+        "app_mode": "python-streamlit",
+        "app_store_version": 1
+    }
+}

@@ -85,7 +85,7 @@ def shift_rrt(data):
     df_RRT['shift global RRT'] = shift_actions
 
     # Display the df_RRT with the shift actions in the frontend
-    st.write("Updated df_RRT with Shift Actions:")
+    st.write("df_RRT with Shift Actions:")
     st.dataframe(df_RRT)  # Display df_RRT on the frontend
 
     # Now, iterate over df_RRT and apply the logic based on the selected shift action
