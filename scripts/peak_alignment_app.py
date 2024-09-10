@@ -23,7 +23,7 @@ if uploaded_file is not None:
     st.write(data)
     
     # Calculate RRT values and other metrics
-    data, df_RRT = calculate_rrt(data, maxarea)
+    data = calculate_rrt(data, maxarea)
     
     # Shift global RRT values for merging peaks
     selected_rows_df, pivoted_df = shift_rrt(data)
