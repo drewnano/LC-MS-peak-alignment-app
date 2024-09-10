@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "locale": "English_United States.1252",
+  "metadata": {
+    "appmode": "python-streamlit",
+    "entrypoint": "peak_alignment_app.py"
+  },
+  "python": {
+    "version": "3.9.1",
+    "package_manager": {
+      "name": "pip",
+      "version": "24.2",
+      "package_file": "requirements.txt"
+    }
+  },
+  "files": {
+    "requirements.txt": {
+      "checksum": "8c2c3d8d77241aa9b9f493509af13e35"
+    },
+    ".merck.yaml": {
+      "checksum": "c05e3a336f5a329a64e712a38aebe95f"
+    },
+    "README.md": {
+      "checksum": "02ecb3572fbe74577c03ba4f62a84d89"
+    },
+    "scripts/Peak_Alignment.ipynb": {
+      "checksum": "5166e71299d4d2d0daae51a97a6a924e"
+    },
+    "scripts/Requirements.txt": {
+      "checksum": "876a3fde1c5f543cc70e4d08ade321c8"
+    },
+    "scripts/__pycache__/utils.cpython-39.pyc": {
+      "checksum": "03b5a003eb2fc12c484b79106c107223"
+    },
+    "scripts/exampledata/MK-6916_6Week_40C75RH_PeakTable.csv": {
+      "checksum": "4709bdc084f660395e5cb59192894fee"
+    },
+    "scripts/exampledata/Week2_Trimmed.xlsx": {
+      "checksum": "2f916ff1b017f4e898ddec23696b0194"
+    },
+    "scripts/peak_alignment_app.py": {
+      "checksum": "dc5e572132ad54aab822fc9ab739b1e0"
+    },
+    "scripts/peakalignmentapptest.py": {
+      "checksum": "564e7065fe7eaf73d31d012be32e01a6"
+    },
+    "scripts/utils.py": {
+      "checksum": "80148cf7fe66d41e912b8b9b9168d9a1"
+    }
+  }
+}
