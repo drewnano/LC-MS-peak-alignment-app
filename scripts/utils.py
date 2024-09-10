@@ -55,41 +55,75 @@ def find_next_highest_rrt(df, vial, rrt):
 def shift_rrt(data):
     """Handle RRT shifting and return updated data for display."""
     selected_rows_df = pd.DataFrame(columns=data.columns)
+
+    # Group and calculate peakCount and AreaRatio Sum for each RRT
     df_RRT = data.groupby(['RRT']).size().reset_index(name='peakCount')
     df_RRT_area_ratio = data.groupby(['RRT'])['AreaRatio'].sum().reset_index(name='AreaRatio Sum')
     df_RRT = pd.merge(df_RRT, df_RRT_area_ratio, on='RRT')
+
+    # Add a column 'shift global RRT' for shift action dropdowns
     df_RRT['shift global RRT'] = 'None'
-    
+
+    # Add a list to store user-selected actions
+    shift_actions = []
+
     st.write("Select global RRT values for merging peaks")
 
+    # For each row, create a selectbox for the action
     for index, row in df_RRT.iterrows():
+        # Add a dropdown for each row in the 'shift global RRT' column
         shiftaction = st.selectbox(
-            f"Action for {row['shift global RRT']}:",
+            f"Action for RRT {row['RRT']}:",
             options=['None', '< shift to left', '> shift to right'],
-            index=0,
-            key=index 
+            index=0,  # 'None' is the default option
+            key=f"shift_action_{index}"  # Unique key for each dropdown
         )
+        # Store the selected action
+        shift_actions.append(shiftaction)
 
+    # Assign the actions back to the DataFrame
+    df_RRT['shift global RRT'] = shift_actions
+
+    # Display the df_RRT with the shift actions in the frontend
+    st.write("Updated df_RRT with Shift Actions:")
+    st.dataframe(df_RRT)  # Display df_RRT on the frontend
+
+    # Now, iterate over df_RRT and apply the logic based on the selected shift action
+    for index, row in df_RRT.iterrows():
+        shiftaction = row['shift global RRT']
+        
         if shiftaction == 'None':
+            # If no action selected, simply add this row to selected_rows_df
             selected_rows_df = pd.concat([selected_rows_df, data[data['RRT'] == row['RRT']]], ignore_index=True)
 
-        if shiftaction == '< shift to left':
+        elif shiftaction == '< shift to left':
+            # Find the next lowest RRT row for the same Vial
             next_row = find_next_least_rrt(data, row['Vial'], row['RRT'])
             if next_row is not None:
                 next_row['SampleName'] = row['SampleName']
                 next_row['Vial'] = row['Vial']
                 next_row['RRT'] = next_row['RRT']
                 next_row['AreaRatio'] = row['AreaRatio'] + next_row['AreaRatio']
-                selected_rows_df = selected_rows_df.append(next_row, ignore_index=True)
+                selected_rows_df = pd.concat([selected_rows_df, pd.DataFrame([next_row])], ignore_index=True)
         
         elif shiftaction == '> shift to right':
+            # Find the next highest RRT row for the same Vial
             next_row = find_next_highest_rrt(data, row['Vial'], row['RRT'])
             if next_row is not None:
                 next_row['SampleName'] = row['SampleName']
                 next_row['Vial'] = row['Vial']
                 next_row['RRT'] = next_row['RRT']
                 next_row['AreaRatio'] = row['AreaRatio'] + next_row['AreaRatio']
-                selected_rows_df = selected_rows_df.append(next_row, ignore_index=True)
+                selected_rows_df = pd.concat([selected_rows_df, pd.DataFrame([next_row])], ignore_index=True)
 
+    # Pivot the selected_rows_df to get the final DataFrame
     pivoted_df = selected_rows_df.pivot_table(index=['SampleName', 'Vial'], columns='RRT', values='AreaRatio', fill_value=0)
+
+    # Display the selected_rows_df and pivoted_df in the Streamlit app
+    st.write("Selected Rows DataFrame:")
+    st.dataframe(selected_rows_df)
+
+    st.write("Pivoted DataFrame:")
+    st.dataframe(pivoted_df)
+
     return selected_rows_df, pivoted_df
