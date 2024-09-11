@@ -34,7 +34,7 @@ st.markdown(
 )
 
 st.title("LC Peak Alignment Tool")
-st.markdown("DSCS Hackathon Team 3: Kabir Dhingra, David Gray, Stephanie Mozley, Andrew Sinegra, and Kevin Wang")
+st.markdown("DSCS Hackathon Team 3: Andrew Sinegra, Stephanie Mozley, Kevin Wang, David Gray, and Kabir Dhingra")
 st.markdown("---")
 
 # File uploader widget
