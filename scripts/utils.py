@@ -63,8 +63,6 @@ def group_peaksandRRTs(data):
 
 def shift_rrt(data):
     """Handle RRT shifting and return updated data for display."""
-    selected_rows_df = pd.DataFrame(columns=data.columns)
-
     df_RRT = group_peaksandRRTs(data)
 
     # Add a list to store user-selected actions
@@ -88,45 +86,63 @@ def shift_rrt(data):
     df_RRT['shift global RRT'] = shift_actions
 
     # Display the df_RRT with the shift actions in the frontend
-    st.write("df_RRT with Shift Actions:")
+    st.write("Shift Actions for each global RRT:")
     st.dataframe(df_RRT)  # Display df_RRT on the frontend
 
-    # Now, iterate over df_RRT and apply the logic based on the selected shift action
-    for index, row in df_RRT.iterrows():
-        shiftaction = row['shift global RRT']
-        
-        if shiftaction == 'None':
-            # If no action selected, simply add this row to selected_rows_df
-            selected_rows_df = pd.concat([selected_rows_df, data[data['RRT'] == row['RRT']]], ignore_index=True)
+    """Process the RRT shifting based on the actions in df_RRT and return updated data."""
+    selected_rows_df = pd.DataFrame(columns=data.columns)
+    
+    # Iterate through each row in the dataframe 'data'
+    for index, data_row in data.iterrows():
+        # Check if the 'RRT' in 'data_row' exists in 'df_RRT'
+        matching_rrt_row = df_RRT[df_RRT['RRT'] == data_row['RRT']]
 
-        elif shiftaction == '< shift to left':
-            # Find the next lowest RRT row for the same Vial
-            next_row = find_next_least_rrt(data, row['Vial'], row['RRT'])
-            if next_row is not None:
-                next_row['SampleName'] = row['SampleName']
-                next_row['Vial'] = row['Vial']
-                next_row['RRT'] = next_row['RRT']
-                next_row['AreaRatio'] = row['AreaRatio'] + next_row['AreaRatio']
-                selected_rows_df = pd.concat([selected_rows_df, pd.DataFrame([next_row])], ignore_index=True)
-        
-        elif shiftaction == '> shift to right':
-            # Find the next highest RRT row for the same Vial
-            next_row = find_next_highest_rrt(data, row['Vial'], row['RRT'])
-            if next_row is not None:
-                next_row['SampleName'] = row['SampleName']
-                next_row['Vial'] = row['Vial']
-                next_row['RRT'] = next_row['RRT']
-                next_row['AreaRatio'] = row['AreaRatio'] + next_row['AreaRatio']
-                selected_rows_df = pd.concat([selected_rows_df, pd.DataFrame([next_row])], ignore_index=True)
+        if not matching_rrt_row.empty:
+            # Get the 'shiftaction' for the matching RRT row from df_RRT
+            shiftaction = matching_rrt_row['shift global RRT'].values[0]
 
-    # Pivot the selected_rows_df to get the final DataFrame
+            # If no shift action, simply add the row to 'selected_rows_df'
+            if shiftaction == 'None':
+                selected_rows_df = pd.concat([selected_rows_df, pd.DataFrame([data_row])], ignore_index=True)
+
+            # If "< shift to left", find next least RRT and merge the rows
+            elif shiftaction == '< shift to left':
+                next_row = find_next_least_rrt(data, data_row['Vial'], data_row['RRT'])
+                if next_row is not None:
+                    modified_row = next_row.copy()
+                    modified_row['SampleName'] = data_row['SampleName']
+                    modified_row['Vial'] = data_row['Vial']
+                    modified_row['RRT'] = next_row['RRT']
+                    modified_row['AreaRatio'] = data_row['AreaRatio'] + next_row['AreaRatio']
+
+                    # Ensure 'modified_row' is a DataFrame before concatenation
+                    if isinstance(modified_row, pd.Series):
+                        modified_row = modified_row.to_frame().T
+
+                    # Concatenate the modified row to the selected rows dataframe
+                    selected_rows_df = pd.concat([selected_rows_df, modified_row], ignore_index=True)
+
+            # If "> shift to right", find next highest RRT and merge the rows
+            elif shiftaction == '> shift to right':
+                next_row = find_next_highest_rrt(data, data_row['Vial'], data_row['RRT'])
+                if next_row is not None:
+                    modified_row = next_row.copy()
+                    modified_row['SampleName'] = data_row['SampleName']
+                    modified_row['Vial'] = data_row['Vial']
+                    modified_row['RRT'] = next_row['RRT']
+                    modified_row['AreaRatio'] = data_row['AreaRatio'] + next_row['AreaRatio']
+
+                    # Ensure 'modified_row' is a DataFrame before concatenation
+                    if isinstance(modified_row, pd.Series):
+                        modified_row = modified_row.to_frame().T
+
+                    # Concatenate the modified row to the selected rows dataframe
+                    selected_rows_df = pd.concat([selected_rows_df, modified_row], ignore_index=True)
+        else:
+            # If no matching RRT in df_RRT, just append the row to 'selected_rows_df'
+            selected_rows_df = pd.concat([selected_rows_df, pd.DataFrame([data_row])], ignore_index=True)
+
+    # Pivot the selected rows for display
     pivoted_df = selected_rows_df.pivot_table(index=['SampleName', 'Vial'], columns='RRT', values='AreaRatio', fill_value=0)
-
-    # Display the selected_rows_df and pivoted_df in the Streamlit app
-    st.write("Selected Rows DataFrame:")
-    st.dataframe(selected_rows_df)
-
-    st.write("Pivoted DataFrame:")
-    st.dataframe(pivoted_df)
-
     return selected_rows_df, pivoted_df
+    
