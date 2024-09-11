@@ -3,7 +3,13 @@ import streamlit as st
 
 def process_uploaded_file(uploaded_file):
     """Process the uploaded Excel file and pre-process data."""
-    data = pd.read_excel(uploaded_file)
+    if uploaded_file.name.endswith('.xlsx'):
+        data = pd.read_excel(uploaded_file)
+    elif uploaded_file.name.endswith('.csv'):
+        data = pd.read_csv(uploaded_file)
+    else:
+        st.error("Unsupported file format")
+        return None, None
     df_vial_counts = data.groupby(['Vial']).size().reset_index(name='peakCount')
     maxarea = data.groupby(['Vial'])['Area'].max().reset_index()
     areasum = data.groupby(['Vial'])['Area'].sum().reset_index(name='Sum of Area')
@@ -64,6 +70,9 @@ def group_peaksandRRTs(data):
 def shift_rrt(data):
     """Handle RRT shifting and return updated data for display."""
     df_RRT = group_peaksandRRTs(data)
+    # Display the df_RRT with the shift actions in the frontend
+    st.write("Shift Actions for each global RRT:")
+    st.dataframe(df_RRT)  # Display df_RRT on the frontend
 
     # Add a list to store user-selected actions
     shift_actions = []
@@ -84,10 +93,6 @@ def shift_rrt(data):
 
     # Assign the actions back to the DataFrame
     df_RRT['shift global RRT'] = shift_actions
-
-    # Display the df_RRT with the shift actions in the frontend
-    st.write("Shift Actions for each global RRT:")
-    st.dataframe(df_RRT)  # Display df_RRT on the frontend
 
     """Process the RRT shifting based on the actions in df_RRT and return updated data."""
     selected_rows_df = pd.DataFrame(columns=data.columns)

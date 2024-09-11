@@ -33,12 +33,12 @@ st.markdown(
     """, unsafe_allow_html=True
 )
 
-st.title("LC Peak Alignment Tool")
+st.title("LC Peak Alignment Tool v1.0")
 st.markdown("DSCS Hackathon Team 3: Andrew Sinegra, Stephanie Mozley, Kevin Wang, David Gray, and Kabir Dhingra")
 st.markdown("---")
 
 # File uploader widget
-uploaded_file = st.file_uploader("Upload an excel file of the peaks", type=["xlsx"])
+uploaded_file = st.file_uploader("Upload an excel file of the peaks", type=["csv","xlsx"])
 
 # Check if a file has been uploaded
 if uploaded_file is not None:
@@ -54,28 +54,31 @@ if uploaded_file is not None:
     
     # Shift global RRT values for merging peaks
     selected_rows_df, pivoted_df = shift_rrt(data)
+    col1,col2 = st.columns(2)
+    with col1:
+        st.write("Processed data with RRTs, merged peaks:")
+        st.dataframe(selected_rows_df)
+        
+        # Convert the DataFrame to CSV format
+        csv = selected_rows_df.to_csv(index=True, header=True)
+        file_name = uploaded_file.name.rsplit(".", 1)[0] + "_selectedrowswRRT.csv"
+        st.download_button(
+            label="Download processed output as CSV",
+            data=csv,
+            file_name=file_name,
+            mime='text/csv',
+        )
     
-    # Display the updated DataFrame
-    st.write("Processed DataFrame:")
-    st.write(selected_rows_df)
-    
-    # Convert the DataFrame to a CSV format
-    csv = selected_rows_df.to_csv(index=True, header=True)
-    file_name = uploaded_file.name.replace(".xlsx", "") + "_selectedrowswRRT.csv"
-    st.download_button(
-        label="Download processed output as CSV",
-        data=csv,
-        file_name=file_name,
-        mime='text/csv',
-    )
-    st.write("Pivoted DataFrame:")
-    st.dataframe(pivoted_df)
-
-    csv2 = pivoted_df.to_csv(index=True, header=True)
-    pivoted_filename = uploaded_file.name.replace(".xlsx", "") + "_RRTspivoted.csv"
-    st.download_button(
-        label="Download pivoted output as CSV",
-        data=csv2,
-        file_name=pivoted_filename,
-        mime='text/csv',
-    )
+    with col2:
+        st.write("Pivoted version with columns by global RRT:")
+        st.dataframe(pivoted_df)
+        
+        # Convert the DataFrame to CSV format
+        csv2 = pivoted_df.to_csv(index=True, header=True)
+        pivoted_filename = uploaded_file.name.rsplit(".", 1)[0] + "_RRTspivoted.csv"
+        st.download_button(
+            label="Download pivoted output as CSV",
+            data=csv2,
+            file_name=pivoted_filename,
+            mime='text/csv',
+        )
